@@ -3,6 +3,7 @@
 This project is in the very early stages of development.
 
 Provide a file path containing one closed lambda term.
+<br />
 For example, the **S** combinator can be written as:
 ```
 x => y => z => x z (y z)
@@ -26,4 +27,5 @@ Expanding these definitions into a single expression yields:
 ```
 
 This is a somewhat unusual type, encoding the minimal path to HNF.
+<br />
 In fact, type inference terminates for exactly the solvable terms.
