@@ -1,11 +1,11 @@
-use crate::{annote::Annote, Term};
+use crate::{annote::Annote, Ident, Term};
 use derive_more::{From, Into};
 use typed_index_collections::TiVec;
 
-#[derive(From, Into, Clone, Copy)]
+#[derive(From, Into, Clone, Copy, PartialEq, Eq)]
 pub struct MonoIdx(usize);
 
-#[derive(From, Into, Clone, Copy)]
+#[derive(From, Into, Clone, Copy, PartialEq, Eq)]
 pub struct PolyIdx(usize);
 
 pub enum Mono {
@@ -21,6 +21,7 @@ pub struct Poly {
 
 pub struct Forest {
     pub syntax: Annote<MonoIdx>,
+    pub cycles: [(MonoIdx, PolyIdx); 2],
     pub monos: TiVec<MonoIdx, Mono>,
     pub polys: TiVec<PolyIdx, Poly>,
 }
@@ -37,7 +38,12 @@ impl Forest {
                 };
                 self.polys[dom].factors.push(mono);
                 if let Some(witness) = self.polys[dom].witness {
-                    self.check(witness, mono);
+                    let prev = self.cycles[0];
+                    self.cycles[0] = self.cycles[1];
+                    self.cycles[1] = (mono, dom);
+                    if !self.cycles.iter().all(|&cycle| cycle == prev) {
+                        self.check(witness, mono);
+                    }
                 }
             }
             Term::Abstr(idx) => {
@@ -77,6 +83,10 @@ impl From<Annote<()>> for Forest {
     fn from(value: Annote<()>) -> Self {
         let mut forest = Self {
             syntax: value.fmap(&mut |()| MonoIdx::from(usize::MAX)),
+            cycles: [
+                (MonoIdx::from(usize::MAX), PolyIdx::from(usize::MAX)),
+                (MonoIdx::from(usize::MAX), PolyIdx::from(usize::MAX)),
+            ],
             monos: TiVec::new(),
             polys: TiVec::new(),
         };
