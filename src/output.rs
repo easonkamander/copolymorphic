@@ -10,12 +10,15 @@ impl std::fmt::Display for MonoIdx {
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
             'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
         ];
-        let mut num = usize::from(*self) + 1;
-        while num > 0 {
-            write!(f, "{}", LETTER[(num - 1) % LENGTH])?;
-            num /= LENGTH;
+        if let Some(mut num) = usize::from(*self).checked_add(1) {
+            while num > 0 {
+                write!(f, "{}", LETTER[(num - 1) % LENGTH])?;
+                num /= LENGTH;
+            }
+            write!(f, "")
+        } else {
+            write!(f, "_")
         }
-        write!(f, "")
     }
 }
 

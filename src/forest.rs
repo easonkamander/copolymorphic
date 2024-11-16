@@ -66,7 +66,6 @@ impl Forest {
                 if cfg!(feature = "probing") && self.polys[dom].factors.is_empty() {
                     let probe = self.monos.push_and_get_key(Mono::Free());
                     self.polys[dom].factors.push(probe);
-                    println!("Probing {}", probe);
                     self.check(arg, probe);
                 }
             }
@@ -77,7 +76,7 @@ impl Forest {
 impl From<Annote<()>> for Forest {
     fn from(value: Annote<()>) -> Self {
         let mut forest = Self {
-            syntax: Annote::from(value).fmap(&mut |()| MonoIdx::from(usize::MAX)),
+            syntax: value.fmap(&mut |()| MonoIdx::from(usize::MAX)),
             monos: TiVec::new(),
             polys: TiVec::new(),
         };
