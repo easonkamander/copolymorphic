@@ -1,31 +1,34 @@
 ## CoPolymorphic Type Inference
 
-This project is in the very early stages of development.
+This project is still in the early stages of development.
 
-Provide a file path containing one closed lambda term.
+Enter a file path containing one closed lambda term.
 <br />
-For example, the **S** combinator can be written as:
+For example, the **s** combinator can be written as:
 ```
 x => y => z => x z (y z)
 ```
 
-Which would result in the following "principal type":
+Which would result in the following principal type:
 ```
 Forest (A) {
         A = F -> B
-        B = [] -> C
-        C = [] -> D
+        B = I -> C
+        C = G & J -> D
         D = free()
-        E = [] -> D
-        F = [] -> E
+        E = H -> D
+        F = G -> E
+        G = free()
+        H = free()
+        I = J -> H
+        J = free()
 }
 ```
 
 Expanding these definitions into a single expression yields:
 ```
-([] -> [] -> D) -> [] -> [] -> D
+A =
+F -> B =
+(G -> E) -> I -> C =
+(G -> H -> D) -> (J -> H) -> (G & J) -> D
 ```
-
-This is a somewhat unusual type, encoding the minimal path to HNF.
-<br />
-In fact, type inference terminates for exactly the solvable terms.

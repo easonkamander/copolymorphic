@@ -65,7 +65,7 @@ impl Forest {
                 });
                 let arw = self.monos.push_and_get_key(Mono::Func(dom, mono));
                 self.check(fun, arw);
-                if cfg!(feature = "probing") && self.polys[dom].factors.is_empty() {
+                if self.polys[dom].factors.is_empty() {
                     let probe = self.monos.push_and_get_key(Mono::Free());
                     self.polys[dom].factors.push(probe);
                     self.check(arg, probe);
