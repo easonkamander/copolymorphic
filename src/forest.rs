@@ -21,7 +21,6 @@ pub struct Poly {
 
 pub struct Forest {
     pub syntax: Annote<MonoIdx>,
-    pub cycles: [(MonoIdx, PolyIdx); 2],
     pub monos: TiVec<MonoIdx, Mono>,
     pub polys: TiVec<PolyIdx, Poly>,
 }
@@ -36,12 +35,9 @@ impl Forest {
                 let Mono::Func(dom, _) = self.monos[fun] else {
                     unreachable!()
                 };
-                self.polys[dom].factors.push(mono);
-                if let Some(witness) = self.polys[dom].witness {
-                    let prev = self.cycles[0];
-                    self.cycles[0] = self.cycles[1];
-                    self.cycles[1] = (mono, dom);
-                    if !self.cycles.iter().all(|&cycle| cycle == prev) {
+                if !self.polys[dom].factors.contains(&mono) {
+                    self.polys[dom].factors.push(mono);
+                    if let Some(witness) = self.polys[dom].witness {
                         self.check(witness, mono);
                     }
                 }
@@ -83,10 +79,6 @@ impl From<Annote<()>> for Forest {
     fn from(value: Annote<()>) -> Self {
         let mut forest = Self {
             syntax: value.fmap(&mut |()| MonoIdx::from(usize::MAX)),
-            cycles: [
-                (MonoIdx::from(usize::MAX), PolyIdx::from(usize::MAX)),
-                (MonoIdx::from(usize::MAX), PolyIdx::from(usize::MAX)),
-            ],
             monos: TiVec::new(),
             polys: TiVec::new(),
         };
