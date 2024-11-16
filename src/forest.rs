@@ -1,4 +1,4 @@
-use crate::{annote::Annote, Ident, Term};
+use crate::{annote::Annote, Term};
 use derive_more::{From, Into};
 use typed_index_collections::TiVec;
 
