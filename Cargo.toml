@@ -7,3 +7,7 @@ edition = "2021"
 typed-index-collections = "3.2"
 derive_more = { version = "1.0", features = [ "from", "into" ] }
 chumsky = "0.9"
+
+[features]
+default = []
+probing = []
